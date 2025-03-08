@@ -208,18 +208,27 @@ const RoomVisualizer: React.FC<RoomVisualizerProps> = ({
     const startPosition = new THREE.Vector3().copy(cameraRef.current.position);
     const targetVector = new THREE.Vector3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
     const startTime = Date.now();
-    const duration = 1000; // 1 second animation
+    const duration = 1200; // 1.2 second animation - slightly longer for smoother transitions
     
     const animateCameraMove = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // Ease function - cubic ease out
+      // Ease function - cubic ease out for smoother transitions
       const easeProgress = 1 - Math.pow(1 - progress, 3);
       
       if (cameraRef.current) {
         cameraRef.current.position.lerpVectors(startPosition, targetVector, easeProgress);
-        cameraRef.current.lookAt(targetPosition.x, targetPosition.y, targetPosition.z);
+        
+        // Set camera lookAt for each frame of the animation
+        // This ensures the camera smoothly changes its orientation during movement
+        const currentTarget = new THREE.Vector3(
+          targetPosition.x, 
+          targetPosition.y, 
+          targetPosition.z
+        );
+        
+        cameraRef.current.lookAt(currentTarget);
         
         if (progress < 1) {
           requestAnimationFrame(animateCameraMove);
@@ -228,6 +237,9 @@ const RoomVisualizer: React.FC<RoomVisualizerProps> = ({
     };
     
     animateCameraMove();
+    
+    // Add a small console log to help with debugging camera positions
+    console.log(`Camera moved to ${cameraView} view:`, cameraPosition);
     
   }, [dimensions, cameraView]);
   

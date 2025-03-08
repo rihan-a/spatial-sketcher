@@ -28,27 +28,27 @@ export const getCameraPosition = (dimensions: RoomDimensions, view: CameraView):
   switch (view) {
     case 'corner':
       return {
-        x: width * 0.7,
-        y: height * 0.6,
-        z: length * 0.7,
+        x: width * 0.8,  // Moved further out from the corner
+        y: height * 0.7, // Slightly higher perspective
+        z: length * 0.8, // Moved further out from the corner
       };
     case 'side':
       return {
-        x: width * 1.2,
-        y: height * 0.5,
-        z: 0,
+        x: width * 1.5,  // Positioned further away from the side wall
+        y: height * 0.6, // Slightly higher for better perspective
+        z: length * 0.3, // Positioned slightly off-center
       };
     case 'top':
       return {
-        x: 0,
-        y: height * 2,
-        z: 0,
+        x: width * 0.3,  // Slightly off-center for a better top view
+        y: height * 2.2, // Higher for a more direct top-down view
+        z: length * 0.3, // Slightly off-center
       };
     case 'front':
       return {
-        x: 0,
-        y: height * 0.5,
-        z: length * 1.2,
+        x: width * 0.3,  // Positioned off-center for a more natural view
+        y: height * 0.6, // Positioned higher for a better perspective
+        z: length * 1.5, // Positioned further away from the front wall
       };
     default:
       return {
@@ -61,10 +61,11 @@ export const getCameraPosition = (dimensions: RoomDimensions, view: CameraView):
 
 // Calculate target position for camera to look at
 export const getCameraTarget = (dimensions: RoomDimensions): CameraPosition => {
+  // Adjust where the camera looks at - slightly off-center for more natural views
   return {
-    x: dimensions.width / 2,
-    y: dimensions.height / 2,
-    z: dimensions.length / 2,
+    x: dimensions.width * 0.45,  // Slightly off-center horizontally
+    y: dimensions.height * 0.4,  // Look at a lower point in the room
+    z: dimensions.length * 0.45, // Slightly off-center depth-wise
   };
 };
 
