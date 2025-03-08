@@ -30,9 +30,9 @@ const RoomVisualizer: React.FC<RoomVisualizerProps> = ({
     scene.background = new THREE.Color(0xf5f5f7);
     sceneRef.current = scene;
     
-    // Create camera
+    // Create camera with wider field of view
     const camera = new THREE.PerspectiveCamera(
-      50,
+      65, // Increased from 50 to 65 for a wider angle
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000
@@ -136,9 +136,9 @@ const RoomVisualizer: React.FC<RoomVisualizerProps> = ({
     });
     
     const floorMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf0f0f0,
-      roughness: 0.5,
-      metalness: 0.0,
+      color: 0xe0e0e0, // Darker floor color (was 0xf0f0f0)
+      roughness: 0.7,
+      metalness: 0.1,
     });
     
     const ceilingMaterial = new THREE.MeshStandardMaterial({
@@ -147,53 +147,85 @@ const RoomVisualizer: React.FC<RoomVisualizerProps> = ({
       metalness: 0.0,
     });
     
+    // Edge material for dark strokes
+    const edgeMaterial = new THREE.LineBasicMaterial({ 
+      color: 0x403E43, // Dark charcoal color for edges
+      linewidth: 1
+    });
+    
+    // Helper function to create a surface with edges
+    const createSurfaceWithEdges = (geometry: THREE.PlaneGeometry, material: THREE.Material, position: THREE.Vector3, rotation: THREE.Euler) => {
+      // Create the plane surface
+      const plane = new THREE.Mesh(geometry, material);
+      plane.position.copy(position);
+      plane.rotation.copy(rotation);
+      plane.receiveShadow = true;
+      
+      // Create edges
+      const edges = new THREE.EdgesGeometry(geometry);
+      const line = new THREE.LineSegments(edges, edgeMaterial);
+      line.position.copy(position);
+      line.rotation.copy(rotation);
+      
+      // Add both to room
+      roomRef.current?.add(plane);
+      roomRef.current?.add(line);
+    };
+    
     // Create floor
     const floorGeometry = new THREE.PlaneGeometry(width, length);
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI * 0.5;
-    floor.position.set(width/2, 0, length/2);
-    floor.receiveShadow = true;
-    roomRef.current.add(floor);
+    createSurfaceWithEdges(
+      floorGeometry,
+      floorMaterial,
+      new THREE.Vector3(width/2, 0, length/2),
+      new THREE.Euler(-Math.PI * 0.5, 0, 0)
+    );
     
     // Create ceiling
     const ceilingGeometry = new THREE.PlaneGeometry(width, length);
-    const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
-    ceiling.rotation.x = Math.PI * 0.5;
-    ceiling.position.set(width/2, height, length/2);
-    ceiling.receiveShadow = true;
-    roomRef.current.add(ceiling);
+    createSurfaceWithEdges(
+      ceilingGeometry,
+      ceilingMaterial,
+      new THREE.Vector3(width/2, height, length/2),
+      new THREE.Euler(Math.PI * 0.5, 0, 0)
+    );
     
     // Create walls
     // Back wall
     const backWallGeometry = new THREE.PlaneGeometry(width, height);
-    const backWall = new THREE.Mesh(backWallGeometry, wallMaterial);
-    backWall.position.set(width/2, height/2, 0);
-    backWall.receiveShadow = true;
-    roomRef.current.add(backWall);
+    createSurfaceWithEdges(
+      backWallGeometry,
+      wallMaterial,
+      new THREE.Vector3(width/2, height/2, 0),
+      new THREE.Euler(0, 0, 0)
+    );
     
     // Front wall
     const frontWallGeometry = new THREE.PlaneGeometry(width, height);
-    const frontWall = new THREE.Mesh(frontWallGeometry, wallMaterial);
-    frontWall.position.set(width/2, height/2, length);
-    frontWall.rotation.y = Math.PI;
-    frontWall.receiveShadow = true;
-    roomRef.current.add(frontWall);
+    createSurfaceWithEdges(
+      frontWallGeometry,
+      wallMaterial,
+      new THREE.Vector3(width/2, height/2, length),
+      new THREE.Euler(0, Math.PI, 0)
+    );
     
     // Left wall
     const leftWallGeometry = new THREE.PlaneGeometry(length, height);
-    const leftWall = new THREE.Mesh(leftWallGeometry, wallMaterial);
-    leftWall.position.set(0, height/2, length/2);
-    leftWall.rotation.y = Math.PI * 0.5;
-    leftWall.receiveShadow = true;
-    roomRef.current.add(leftWall);
+    createSurfaceWithEdges(
+      leftWallGeometry,
+      wallMaterial,
+      new THREE.Vector3(0, height/2, length/2),
+      new THREE.Euler(0, Math.PI * 0.5, 0)
+    );
     
     // Right wall
     const rightWallGeometry = new THREE.PlaneGeometry(length, height);
-    const rightWall = new THREE.Mesh(rightWallGeometry, wallMaterial);
-    rightWall.position.set(width, height/2, length/2);
-    rightWall.rotation.y = -Math.PI * 0.5;
-    rightWall.receiveShadow = true;
-    roomRef.current.add(rightWall);
+    createSurfaceWithEdges(
+      rightWallGeometry,
+      wallMaterial,
+      new THREE.Vector3(width, height/2, length/2),
+      new THREE.Euler(0, -Math.PI * 0.5, 0)
+    );
     
   }, [dimensions]);
   

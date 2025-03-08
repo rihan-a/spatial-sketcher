@@ -28,33 +28,33 @@ export const getCameraPosition = (dimensions: RoomDimensions, view: CameraView):
   switch (view) {
     case 'corner':
       return {
-        x: width * 0.8,  // Moved further out from the corner
+        x: width * 1.0,  // Increased distance for wider camera view
         y: height * 0.7, // Slightly higher perspective
-        z: length * 0.8, // Moved further out from the corner
+        z: length * 1.0, // Increased distance for wider camera view
       };
     case 'side':
       return {
-        x: width * 1.5,  // Positioned further away from the side wall
+        x: width * 1.8,  // Increased distance for wider camera view
         y: height * 0.6, // Slightly higher for better perspective
         z: length * 0.3, // Positioned slightly off-center
       };
     case 'top':
       return {
         x: width * 0.3,  // Slightly off-center for a better top view
-        y: height * 2.2, // Higher for a more direct top-down view
+        y: height * 2.5, // Higher for a more direct top-down view
         z: length * 0.3, // Slightly off-center
       };
     case 'front':
       return {
         x: width * 0.3,  // Positioned off-center for a more natural view
         y: height * 0.6, // Positioned higher for a better perspective
-        z: length * 1.5, // Positioned further away from the front wall
+        z: length * 1.8, // Increased distance for wider camera view
       };
     default:
       return {
-        x: width * 0.7,
+        x: width * 0.8,
         y: height * 0.6,
-        z: length * 0.7,
+        z: length * 0.8,
       };
   }
 };
