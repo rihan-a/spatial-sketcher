@@ -2,7 +2,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-interface LabelProps extends React.HTMLAttributes<HTMLParagraphElement> {
+interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
   htmlFor?: string;
 }
 
@@ -21,7 +21,7 @@ export const Label = ({ className, children, htmlFor, ...props }: LabelProps) =>
   );
 };
 
-interface SliderProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface SliderProps {
   label: string;
   value: number;
   min: number;
@@ -29,6 +29,7 @@ interface SliderProps extends React.InputHTMLAttributes<HTMLInputElement> {
   step?: number;
   unit?: string;
   onChange: (value: number) => void;
+  className?: string;
 }
 
 export const Slider = ({
@@ -40,8 +41,11 @@ export const Slider = ({
   unit = "m",
   onChange,
   className,
-  ...props
 }: SliderProps) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(parseFloat(e.target.value));
+  };
+
   return (
     <div className="mb-4">
       <div className="flex justify-between items-center mb-2">
@@ -54,12 +58,11 @@ export const Slider = ({
         max={max}
         step={step}
         value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
+        onChange={handleChange}
         className={cn(
           "w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer input-slider",
           className
         )}
-        {...props}
       />
     </div>
   );
