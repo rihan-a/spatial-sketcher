@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
 import { RoomDimensions, CameraView } from "@/lib/roomUtils";
@@ -17,7 +16,7 @@ const RoomVisualizer: React.FC<RoomVisualizerProps> = ({
   cameraView,
   className 
 }) => {
-  const { containerRef, sceneRef, cameraRef } = useThreeScene();
+  const { containerRef, sceneRef, cameraRef, controlsRef, rendererRef } = useThreeScene(dimensions);
   const roomRef = useRef<THREE.Group | null>(null);
   
   // Setup room group
@@ -44,6 +43,25 @@ const RoomVisualizer: React.FC<RoomVisualizerProps> = ({
   
   // Handle camera animations
   useCameraAnimation(cameraRef, dimensions, cameraView);
+  
+  // Toggle orbit controls
+  useEffect(() => {
+    if (controlsRef.current) {
+      controlsRef.current.enabled = cameraView === 'free';
+      if (cameraView === 'free' && cameraRef.current) {
+        cameraRef.current.position.y = 1.7; // Set fixed eye level
+      }
+      controlsRef.current.update();
+    }
+  }, [cameraView, controlsRef]);
+  
+  // Add this new useEffect
+  useEffect(() => {
+    if (rendererRef.current && sceneRef.current && cameraRef.current) {
+      // Force a render to update the canvas
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+    }
+  }, [dimensions, cameraView, rendererRef, sceneRef, cameraRef]);
   
   return (
     <div 
