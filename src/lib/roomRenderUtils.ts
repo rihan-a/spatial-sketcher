@@ -1,4 +1,3 @@
-
 import * as THREE from "three";
 import { RoomDimensions } from "./roomUtils";
 
@@ -26,8 +25,8 @@ export const createRoomMaterials = () => {
     
     // Edge material for dark strokes
     edgeMaterial: new THREE.LineBasicMaterial({ 
-      color: 0x403E43, // Dark charcoal color for edges
-      linewidth: 1
+      color: 0x252525, // Darker color
+      linewidth: 2
     })
   };
 };
@@ -90,47 +89,49 @@ export const createRoom = (dimensions: RoomDimensions, roomGroup: THREE.Group) =
     roomGroup
   );
   
-  // Create walls
+  // Update wall creation to use BoxGeometry instead of PlaneGeometry
+  const wallThickness = 0.1; // 10cm thick walls
+
   // Back wall
-  const backWallGeometry = new THREE.PlaneGeometry(width, height);
+  const backWallGeometry = new THREE.BoxGeometry(width, height, wallThickness);
   createSurfaceWithEdges(
     backWallGeometry,
     materials.wallMaterial,
     materials.edgeMaterial,
-    new THREE.Vector3(width/2, height/2, 0),
+    new THREE.Vector3(width/2, height/2, -wallThickness/2),
     new THREE.Euler(0, 0, 0),
     roomGroup
   );
   
   // Front wall
-  const frontWallGeometry = new THREE.PlaneGeometry(width, height);
+  const frontWallGeometry = new THREE.BoxGeometry(width, height, wallThickness);
   createSurfaceWithEdges(
     frontWallGeometry,
     materials.wallMaterial,
     materials.edgeMaterial,
-    new THREE.Vector3(width/2, height/2, length),
+    new THREE.Vector3(width/2, height/2, length + wallThickness/2),
     new THREE.Euler(0, Math.PI, 0),
     roomGroup
   );
   
   // Left wall
-  const leftWallGeometry = new THREE.PlaneGeometry(length, height);
+  const leftWallGeometry = new THREE.BoxGeometry(length, height, wallThickness);
   createSurfaceWithEdges(
     leftWallGeometry,
     materials.wallMaterial,
     materials.edgeMaterial,
-    new THREE.Vector3(0, height/2, length/2),
+    new THREE.Vector3(-wallThickness/2, height/2, length/2),
     new THREE.Euler(0, Math.PI * 0.5, 0),
     roomGroup
   );
   
   // Right wall
-  const rightWallGeometry = new THREE.PlaneGeometry(length, height);
+  const rightWallGeometry = new THREE.BoxGeometry(length, height, wallThickness);
   createSurfaceWithEdges(
     rightWallGeometry,
     materials.wallMaterial,
     materials.edgeMaterial,
-    new THREE.Vector3(width, height/2, length/2),
+    new THREE.Vector3(width + wallThickness/2, height/2, length/2),
     new THREE.Euler(0, -Math.PI * 0.5, 0),
     roomGroup
   );

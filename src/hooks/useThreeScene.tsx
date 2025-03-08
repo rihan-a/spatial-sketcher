@@ -1,6 +1,6 @@
-
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 export interface ThreeSceneRefs {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -8,14 +8,16 @@ export interface ThreeSceneRefs {
   sceneRef: React.RefObject<THREE.Scene | null>;
   cameraRef: React.RefObject<THREE.PerspectiveCamera | null>;
   frameIdRef: React.RefObject<number | null>;
+  controlsRef: React.RefObject<OrbitControls | null>;
 }
 
-export function useThreeScene(): ThreeSceneRefs {
+export function useThreeScene(dimensions: { width: number; length: number; height: number }): ThreeSceneRefs {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const frameIdRef = useRef<number | null>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
   
   // Setup three.js scene
   useEffect(() => {
@@ -36,7 +38,10 @@ export function useThreeScene(): ThreeSceneRefs {
     cameraRef.current = camera;
 
     // Create renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true,
+      preserveDrawingBuffer: true
+    });
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -50,10 +55,6 @@ export function useThreeScene(): ThreeSceneRefs {
     // Add directional lights from different angles
     scene.add(createDirectionalLight(5, 10, 5, 0.8));
     scene.add(createDirectionalLight(-5, 8, -10, 0.3));
-    
-    // Create grid helper for reference
-    const gridHelper = new THREE.GridHelper(10, 10, 0xaaaaaa, 0xdddddd);
-    scene.add(gridHelper);
     
     // Animation loop
     const animate = () => {
@@ -79,6 +80,32 @@ export function useThreeScene(): ThreeSceneRefs {
     
     window.addEventListener("resize", handleResize);
     
+    // Add OrbitControls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enabled = false; // Start disabled
+    controls.minDistance = 1;
+    controls.maxDistance = Math.max(dimensions.width, dimensions.length, dimensions.height) * 0.8;
+    controlsRef.current = controls;
+    
+    // Add camera position constraints
+    controls.addEventListener('change', () => {
+      if (controlsRef.current?.enabled) {
+        // Keep camera at fixed height
+        camera.position.y = 1.7;
+        
+        // Calculate room boundaries
+        const padding = 0.5;
+        const minX = padding;
+        const maxX = dimensions.width - padding;
+        const minZ = padding;
+        const maxZ = dimensions.length - padding;
+        
+        // Clamp camera position
+        camera.position.x = THREE.MathUtils.clamp(camera.position.x, minX, maxX);
+        camera.position.z = THREE.MathUtils.clamp(camera.position.z, minZ, maxZ);
+      }
+    });
+    
     return () => {
       if (frameIdRef.current) {
         cancelAnimationFrame(frameIdRef.current);
@@ -90,14 +117,15 @@ export function useThreeScene(): ThreeSceneRefs {
       
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [dimensions]);
 
   return {
     containerRef,
     rendererRef,
     sceneRef,
     cameraRef,
-    frameIdRef
+    frameIdRef,
+    controlsRef
   };
 }
 

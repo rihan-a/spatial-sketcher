@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import * as THREE from "three";
 import { CameraView, RoomDimensions, getCameraPosition, getCameraTarget } from "@/lib/roomUtils";
@@ -10,7 +9,7 @@ export function useCameraAnimation(
 ) {
   // Update camera position based on selected view
   useEffect(() => {
-    if (!cameraRef.current) return;
+    if (!cameraRef.current || cameraView === 'free') return;
     
     const cameraPosition = getCameraPosition(dimensions, cameraView);
     const targetPosition = getCameraTarget(dimensions);

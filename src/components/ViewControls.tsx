@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "./ui-components";
 import { CameraView, CAMERA_VIEWS } from "@/lib/roomUtils";
@@ -6,9 +5,10 @@ import { CameraView, CAMERA_VIEWS } from "@/lib/roomUtils";
 interface ViewControlsProps {
   activeView: CameraView;
   onChange: (view: CameraView) => void;
+  onDownload: () => void;
 }
 
-const ViewControls: React.FC<ViewControlsProps> = ({ activeView, onChange }) => {
+const ViewControls: React.FC<ViewControlsProps> = ({ activeView, onChange, onDownload }) => {
   return (
     <div className="space-y-2 slide-up" style={{ animationDelay: "100ms" }}>
       <h3 className="text-lg font-semibold mb-4">Camera View</h3>
@@ -26,6 +26,14 @@ const ViewControls: React.FC<ViewControlsProps> = ({ activeView, onChange }) => 
           </Button>
         ))}
       </div>
+      
+      <Button
+        variant="secondary"
+        className="w-full mt-4"
+        onClick={onDownload}
+      >
+        Download Snapshot
+      </Button>
     </div>
   );
 };

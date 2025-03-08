@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card } from "@/components/ui-components";
 import DimensionControls from "@/components/DimensionControls";
@@ -40,7 +39,16 @@ const Index = () => {
             <Card className="scale-in" style={{ animationDelay: "100ms" }}>
               <ViewControls 
                 activeView={cameraView} 
-                onChange={setCameraView} 
+                onChange={setCameraView}
+                onDownload={() => {
+                  const canvas = document.querySelector('canvas');
+                  if (canvas) {
+                    const link = document.createElement('a');
+                    link.download = `room-${Date.now()}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                  }
+                }}
               />
             </Card>
             

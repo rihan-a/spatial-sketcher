@@ -1,6 +1,5 @@
-
 // Camera view presets
-export type CameraView = 'corner' | 'side' | 'top' | 'front';
+export type CameraView = 'corner' | 'side' | 'top' | 'front' | 'free';
 
 export interface CameraPosition {
   x: number;
@@ -80,4 +79,5 @@ export const CAMERA_VIEWS: { id: CameraView; label: string }[] = [
   { id: 'side', label: 'Side View' },
   { id: 'top', label: 'Top View' },
   { id: 'front', label: 'Front View' },
+  { id: 'free', label: 'Free Orbit' },
 ];
